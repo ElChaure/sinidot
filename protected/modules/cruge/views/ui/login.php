@@ -1,0 +1,137 @@
+<div class="caja1"><h2>Sistema Nacional de Información de Donación de Órganos y Tejidos</h2></div>
+<br>
+
+
+<?php
+ 
+ if (!isset($_SESSION['intentos']))
+   {
+     $_SESSION['intentos'] = 0;
+     $_SESSION['origen'] = 0;
+   }
+ ?>  
+<div class="caja1">
+<h1><?php echo CrugeTranslator::t('logon',"Login"); ?></h1>
+
+<?php if(Yii::app()->user->hasFlash('loginflash')): ?>
+<div class="flash-error">
+	<?php echo Yii::app()->user->getFlash('loginflash');
+          ?>
+</div>
+<?php else:
+
+ ?>
+<div class="form">
+
+
+<?php $form=$this->beginWidget('CActiveForm', array(
+	'id'=>'logon-form',
+	'enableClientValidation'=>false,
+	'clientOptions'=>array(
+		'validateOnSubmit'=>true,
+	),
+)); 
+if (Yii::app()->user->isGuest!=1) {
+   //echo Yii::app()->user->ui->logoutLink;
+   Yii::app()->user->logout();
+}
+?>
+
+
+   
+	<div class="row">
+		<?php echo $form->labelEx($model,'username'); ?>
+		<?php echo $form->textField($model,'username'); ?>
+		<?php echo $form->error($model,'username'); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->labelEx($model,'password'); ?>
+		<?php echo $form->passwordField($model,'password'); ?>
+		<?php echo $form->error($model,'password'); ?>
+	</div>
+
+	<div class="row rememberMe">
+	     <br>
+		<?php //echo $form->checkBox($model,'rememberMe'); ?>
+		<?php //echo $form->label($model,'rememberMe'); ?>
+		<?php //echo $form->error($model,'rememberMe'); ?>
+	</div>
+
+	<div class="row buttons">
+		<?php Yii::app()->user->ui->tbutton(CrugeTranslator::t('logon', "Login")); ?>
+		<br>		
+		<?php echo Yii::app()->user->ui->passwordRecoveryLink; ?>
+		/
+		<?php
+			if(Yii::app()->user->um->getDefaultSystem()->getn('registrationonlogin')===1)
+				echo Yii::app()->user->ui->registrationLink;
+		?>
+	</div>
+
+	<?php
+		//	si el componente CrugeConnector existe lo usa:
+		//
+		if(Yii::app()->getComponent('crugeconnector') != null){
+		if(Yii::app()->crugeconnector->hasEnabledClients){ 
+	?>
+	<div class='crugeconnector'>
+		<span><?php echo CrugeTranslator::t('logon', 'You also can login with');?>:</span>
+		<ul>
+		<?php 
+			$cc = Yii::app()->crugeconnector;
+			foreach($cc->enabledClients as $key=>$config){
+				$image = CHtml::image($cc->getClientDefaultImage($key));
+				echo "<li>".CHtml::link($image,
+					$cc->getClientLoginUrl($key))."</li>";
+			}
+		?>
+		</ul>
+	</div>
+	<?php }} 
+	
+	if ($_SESSION['intentos'] > 3)
+        {
+           //$_SESSION['intentos'] = 0;
+	   //echo "<script>alert('Demasiados intentos, comuniquese con el Administrador');</script>";
+	   throw new CHttpException(402, "Demasiados intentos, comuniquese con el Administrador");
+		   
+        }
+	?>
+	
+
+<?php $this->endWidget(); ?>
+</div>
+
+</div>
+<?php endif; ?>
+
+<?php
+if(Yii::app()->user->hasFlash('success'))
+    Yii::app()->user->setFlash('success', '<strong>Well done!</strong> '.Yii::app()->user->getFlash('success').'.');
+else
+    Yii::app()->user->setFlash('error', '<strong>Error!</strong> '.Yii::app()->user->getFlash('error').'.');
+
+
+$this->widget('bootstrap.widgets.TbAlert', array(
+    'block'=>true, // display a larger alert block?
+    'fade'=>true, // use transitions?
+    'closeText'=>'&times;', // close link text - if set to false, no close link is displayed
+    'alerts'=>array( // configurations per alert type
+        'success'=>array('block'=>true, 'fade'=>true, 'closeText'=>'&times;'), // success, info, warning, error or danger
+    ),
+)); ?>
+
+
+<?php
+/*
+$flashMessages = Yii::app()->user->getFlashes();
+if ($flashMessages) {
+    echo '<ul class="flashes">';
+    foreach($flashMessages as $key => $message) {
+        echo '<li><div class="flash-' . $key . '">' . $message . "</div></li>\n";
+    }
+    echo '</ul>';
+}
+*/
+?>

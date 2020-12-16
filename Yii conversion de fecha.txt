@@ -1,0 +1,58 @@
+A mi me resulta de esta forma usando el convertidos incluido en Yii y lo utilizo en mi modelo, antes de guardar, y despues de encontrarlo
+"Yii::app()->dateformatter->format("yyyy-MM-dd",$FechaAtransformar)"
+
+En mi vista....
+
+    Cita:<?php
+    if ($data['Fecha_hasta_pago_Inicial']!='') {
+    $data['Fecha_hasta_pago_Inicial']=date('d-m-Y',strtotime($data['Fecha_hasta_pago_Inicial']));
+    }
+    $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+    //'model'=>$data,
+    //'attribute'=>'Fecha_hasta_pago_Inicial',
+    'name'=>'Fecha_hasta_pago_Inicial',
+    'value'=>$data['Fecha_hasta_pago_Inicial'],
+    'language' => 'es',/*
+    'htmlOptions' => array('readonly'=>"readonly"),*/
+    'options'=>array(
+    'autoSize'=>true,
+    'defaultDate'=>$data['Fecha_hasta_pago_Inicial'],
+    'dateFormat'=>'d-m-yy',
+    'buttonImage'=>Yii::app()->baseUrl.'/images/calendar.png',
+    'buttonImageOnly'=>true,
+    'buttonText'=>'Fecha de Inicio',
+    'selectOtherMonths'=>true,
+    'showAnim'=>'fade',
+    'showButtonPanel'=>true,
+    'showOn'=>'button',
+    'showOtherMonths'=>true,
+    'changeMonth' => 'true',
+    'changeYear' => 'true',
+    'yearRange' => '1910:2020',
+    ),
+    ));
+    ?>
+
+
+En mi modelo
+
+    Cita:public function beforeSave()
+    {
+    if(parent::beforeSave())
+    {
+
+    $this->Fecha_nac= Yii::app()->dateformatter->format("yyyy-MM-dd",$this->Fecha_nac);
+    parent::beforeSave();
+
+    return true;
+    }
+    else return false;
+    }
+
+
+    Cita: public function afterFind()
+    {
+    $this->Fecha_nac= Yii::app()->dateformatter->format("dd-MM-yyyy",$this->Fecha_nac);
+    parent::afterFind();
+    }
+

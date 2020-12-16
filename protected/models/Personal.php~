@@ -1,0 +1,135 @@
+<?php
+
+/**
+ * This is the model class for table "personal".
+ *
+ * The followings are the available columns in table 'personal':
+ * @property integer $personal_id
+ * @property integer $cedula
+ * @property string $apellido1
+ * @property string $apellido2
+ * @property string $nombre1
+ * @property string $nombre2
+ * @property integer $centro_id
+ * @property integer $cargo_id
+ * @property string $fecha_ingreso
+ * @property integer $estatus_id
+ * @property string $nacionalidad
+ *
+ * The followings are the available model relations:
+ * @property Cargos $cargo
+ * @property EstatusPer $estatus
+ * @property CentrosHospitalarios[] $centrosHospitalarioses
+ */
+class Personal extends CActiveRecord
+{
+	/**
+	 * @return string the associated database table name
+	 */
+	public function tableName()
+	{
+		return 'personal';
+	}
+
+	/**
+	 * @return array validation rules for model attributes.
+	 */
+	public function rules()
+	{
+		// NOTE: you should only define rules for those attributes that
+		// will receive user inputs.
+		return array(
+			array('cedula, centro_id, cargo_id, estatus_id', 'numerical', 'integerOnly'=>true),
+			array('apellido1, apellido2, nombre1', 'length', 'max'=>30),
+			array('nombre2', 'length', 'max'=>20),
+			array('nacionalidad', 'length', 'max'=>1),
+			array('fecha_ingreso', 'safe'),
+            array('cedula', 'unique'),
+			// The following rule is used by search().
+			// @todo Please remove those attributes that should not be searched.
+			array('personal_id, cedula, apellido1, apellido2, nombre1, nombre2, centro_id, cargo_id, fecha_ingreso, estatus_id, nacionalidad', 'safe', 'on'=>'search'),
+		);
+	}
+
+	/**
+	 * @return array relational rules.
+	 */
+	public function relations()
+	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
+		return array(
+			'cargo' => array(self::BELONGS_TO, 'Cargos', 'cargo_id'),
+			'estatus' => array(self::BELONGS_TO, 'Estatus_per', 'estatus_id'),
+			//'centro' => array(self::MANY_MANY, 'Centros_hospitalarios', 'centro_id'),
+			'centro' => array(self::BELONGS_TO, 'Centros_hospitalarios', 'centro_id'),
+			'nacionalidad' => array(self::BELONGS_TO, 'Nacionalidad', 'nacionalidad'),
+		);
+	}
+
+	/**
+	 * @return array customized attribute labels (name=>label)
+	 */
+	public function attributeLabels()
+	{
+		return array(
+			'personal_id' => 'Id Personal',
+			'cedula' => 'Cedula',
+			'apellido1' => '1er Apellido',
+			'apellido2' => '2do Apellido',
+			'nombre1' => '1er Nombre',
+			'nombre2' => '2do Nombre',
+			'centro_id' => 'Centro',
+			'cargo_id' => 'Cargo',
+			'fecha_ingreso' => 'Fecha de Ingreso',
+			'estatus_id' => 'Estatus',
+			'nacionalidad' => 'Nacionalidad',
+		);
+	}
+
+	/**
+	 * Retrieves a list of models based on the current search/filter conditions.
+	 *
+	 * Typical usecase:
+	 * - Initialize the model fields with values from filter form.
+	 * - Execute this method to get CActiveDataProvider instance which will filter
+	 * models according to data in model fields.
+	 * - Pass data provider to CGridView, CListView or any similar widget.
+	 *
+	 * @return CActiveDataProvider the data provider that can return the models
+	 * based on the search/filter conditions.
+	 */
+	public function search()
+	{
+		// @todo Please modify the following code to remove attributes that should not be searched.
+
+		$criteria=new CDbCriteria;
+
+		$criteria->compare('personal_id',$this->personal_id);
+		$criteria->compare('cedula',$this->cedula);
+		$criteria->compare('apellido1',$this->apellido1,true);
+		$criteria->compare('apellido2',$this->apellido2,true);
+		$criteria->compare('nombre1',$this->nombre1,true);
+		$criteria->compare('nombre2',$this->nombre2,true);
+		$criteria->compare('centro_id',$this->centro_id);
+		$criteria->compare('cargo_id',$this->cargo_id);
+		$criteria->compare('fecha_ingreso',$this->fecha_ingreso,true);
+		$criteria->compare('estatus_id',$this->estatus_id);
+		$criteria->compare('nacionalidad',$this->nacionalidad,true);
+
+		return new CActiveDataProvider($this, array(
+			'criteria'=>$criteria,
+		));
+	}
+
+	/**
+	 * Returns the static model of the specified AR class.
+	 * Please note that you should have this exact method in all your CActiveRecord descendants!
+	 * @param string $className active record class name.
+	 * @return Personal the static model class
+	 */
+	public static function model($className=__CLASS__)
+	{
+		return parent::model($className);
+	}
+}
